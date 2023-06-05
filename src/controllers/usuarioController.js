@@ -4,7 +4,7 @@ class UsuarioController {
   static async registrarUsuario(req, res) {
     const { nome, email, senha, confirmSenha, sobrenome, idade, cidade } =
       req.body;
-
+    console.log("body", req);
     try {
       const usuario = await Usuario.create({
         nome,
@@ -16,8 +16,8 @@ class UsuarioController {
         cidade,
       });
       console.log("Usuário registrado com sucesso!");
-      res.json(usuario);
-      res.send("Usuário registrado com sucesso!");
+
+      res.json({ message: "Usuário registrado com sucesso!" });
     } catch (error) {
       console.error("Erro ao registrar o usuário:", error);
       res.status(500).send("Erro ao registrar o usuário");
@@ -31,7 +31,7 @@ class UsuarioController {
       const usuario = await Usuario.findOne({ where: { email, senha } });
       if (usuario) {
         console.log("Login bem-sucedido!");
-        res.send("Login bem-sucedido!");
+        res.status(200).json({ id: usuario.id });
       } else {
         console.log("Credenciais inválidas!");
         res.send("Credenciais inválidas!");

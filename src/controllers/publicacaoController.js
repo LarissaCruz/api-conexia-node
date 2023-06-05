@@ -1,35 +1,38 @@
-const Publicacao = require('../models/publicacao');
+const Publicacao = require("../models/publicacao");
 
 class PublicacaoController {
-  static criarPublicacao(req, res) {
-    const { titulo, conteudo } = req.body;
-    const publicacao = new Publicacao(titulo, conteudo);
+  static async criarPublicacao(req, res) {
+    const { texto, id_usuario } = req.body;
+    try {
+      const post = await Publicacao.create({
+        texto,
+        id_usuario,
+      });
+      console.log("Publicação criada com sucesso!");
 
-    // Lógica para salvar a publicação no banco de dados ou fazer outras operações necessárias
-    // ...
+      res.json({ message: "Publicação criada com sucesso!" });
+    } catch (error) {
+      console.error("Erro ao inserir a publicação:", error);
+      res.status(500).send("Erro ao inserir a publicação");
+    }
 
-    res.send('Publicação criada com sucesso!');
+    res.send("Publicação criada com sucesso!");
   }
 
-  static listarPublicacoes(req, res) {
-    // Lógica para obter todas as publicações do banco de dados ou outras fontes de dados
-    // ...
+  static async listarPublicacoesPorUsuario(req, res) {
+    const idUsuario = req.params.idUsuario; // Supondo que o ID do usuário seja passado como parâmetro na rota
 
-    // Exemplo de resposta com as publicações
-    const publicacoes = [
-      {
-        titulo: 'Título da Publicação 1',
-        conteudo: 'Conteúdo da Publicação 1',
-        dataCriacao: '2023-06-05T10:30:00.000Z'
-      },
-      {
-        titulo: 'Título da Publicação 2',
-        conteudo: 'Conteúdo da Publicação 2',
-        dataCriacao: '2023-06-05T11:15:00.000Z'
-      }
-    ];
-
-    res.json(publicacoes);
+    try {
+      const publicacoes = await Publicacao.findAll({
+        where: {
+          id_usuario: idUsuario, // Filtrando as publicações pelo ID do usuário
+        },
+      });
+      res.json(publicacoes);
+    } catch (error) {
+      console.error("Erro ao listar publicações por usuário:", error);
+      res.status(500).json({ error: "Erro ao listar publicações por usuário" });
+    }
   }
 }
 
