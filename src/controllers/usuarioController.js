@@ -1,16 +1,26 @@
-const Usuario = require('../models/Usuario');
+const Usuario = require("../models/Usuario");
 
 class UsuarioController {
   static async registrarUsuario(req, res) {
-    const { nome, email, senha } = req.body;
+    const { nome, email, senha, confirmSenha, sobrenome, idade, cidade } =
+      req.body;
 
     try {
-      const usuario = await Usuario.create({ nome, email, senha });
-      console.log('Usuário registrado com sucesso!');
-      res.send('Usuário registrado com sucesso!');
+      const usuario = await Usuario.create({
+        nome,
+        email,
+        senha,
+        confirmSenha,
+        sobrenome,
+        idade,
+        cidade,
+      });
+      console.log("Usuário registrado com sucesso!");
+      res.json(usuario);
+      res.send("Usuário registrado com sucesso!");
     } catch (error) {
-      console.error('Erro ao registrar o usuário:', error);
-      res.status(500).send('Erro ao registrar o usuário');
+      console.error("Erro ao registrar o usuário:", error);
+      res.status(500).send("Erro ao registrar o usuário");
     }
   }
 
@@ -20,15 +30,44 @@ class UsuarioController {
     try {
       const usuario = await Usuario.findOne({ where: { email, senha } });
       if (usuario) {
-        console.log('Login bem-sucedido!');
-        res.send('Login bem-sucedido!');
+        console.log("Login bem-sucedido!");
+        res.send("Login bem-sucedido!");
       } else {
-        console.log('Credenciais inválidas!');
-        res.send('Credenciais inválidas!');
+        console.log("Credenciais inválidas!");
+        res.send("Credenciais inválidas!");
       }
     } catch (error) {
-      console.error('Erro ao verificar as credenciais:', error);
-      res.status(500).send('Erro ao fazer o login');
+      console.error("Erro ao verificar as credenciais:", error);
+      res.status(500).send("Erro ao fazer o login");
+    }
+  }
+
+  static async getUsuario(req, res) {
+    const { id } = req.params;
+
+    try {
+      const usuario = await Usuario.findByPk(1, {
+        attributes: [
+          "id",
+          "nome",
+          "email",
+          "senha",
+          "confirmSenha",
+          "sobrenome",
+          "idade",
+          "cidade",
+        ],
+      });
+      if (usuario) {
+        console.log("Usuário encontrado:", usuario);
+        res.json(usuario);
+      } else {
+        console.log("Usuário não encontrado");
+        res.status(404).json({ error: "Usuário não encontrado" });
+      }
+    } catch (error) {
+      console.error("Erro ao buscar o usuário:", error);
+      res.status(500).json({ error: "Erro ao buscar o usuário" });
     }
   }
 }

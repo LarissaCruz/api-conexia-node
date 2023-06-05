@@ -1,14 +1,15 @@
-const express = require('express');
-const routes = require('./routes');
+const express = require("express");
+const bodyParser = require("body-parser");
+const usuarioRoutes = require("./src/routes/usuarioRoutes");
 
 const app = express();
+const port = 3000;
 
-// Outros middlewares e configurações...
+app.use(bodyParser.urlencoded({ extended: false }));
+app.use(bodyParser.json());
 
-// Utilizar as rotas
-app.use(routes);
+app.use("/api", usuarioRoutes);
 
-// Iniciar o servidor
-app.listen(3000, () => {
-  console.log('Servidor rodando na porta 3000');
+app.listen(port, () => {
+  console.log(`A API está rodando em http://localhost:${port}`);
 });
