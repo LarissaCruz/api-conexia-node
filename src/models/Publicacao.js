@@ -13,6 +13,10 @@ Publicacoes.init(
       type: DataTypes.INTEGER,
       allowNull: false,
     },
+    imagem: {
+      type: DataTypes.BLOB("long"),
+      allowNull: true,
+    },
   },
   {
     sequelize,

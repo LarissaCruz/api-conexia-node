@@ -2,39 +2,63 @@ const Usuario = require("../models/Usuario");
 
 class UsuarioController {
   static async registrarUsuario(req, res) {
-    const { nome, email, senha, confirmSenha, sobrenome, idade, cidade } =
-      req.body;
-    console.log("body", req);
     try {
-      const usuario = await Usuario.create({
-        nome,
+      // Extrair os dados do corpo da solicitação
+      const { email, senha, confirmSenha, nome, sobrenome, idade, cidade } =
+        req.body;
+
+      const usuarioExistente = await Usuario.findOne({ where: { email } });
+      if (usuarioExistente) {
+        // Se o email já estiver cadastrado, retorna uma resposta informando a duplicidade
+        return res.status(200).json({
+          status: "duplicidade",
+          message: "O email já está cadastrado.",
+        });
+      }
+      // Extrair a imagem em base64 do corpo da solicitação
+      const imagemBase64 = req.body.imagem;
+
+      // Converter a imagem base64 para Buffer
+      const imagemBuffer = Buffer.from(imagemBase64, "base64");
+
+      // Crie um novo usuário com os dados fornecidos
+      const novoUsuario = await Usuario.create({
         email,
         senha,
         confirmSenha,
+        nome,
         sobrenome,
         idade,
         cidade,
+        imagem: imagemBuffer,
       });
-      console.log("Usuário registrado com sucesso!");
 
-      res.json({ message: "Usuário registrado com sucesso!" });
+      // Responda com sucesso
+      res
+        .status(200)
+        .json({ status: "success", message: "Usuário registrado com sucesso" });
     } catch (error) {
+      // Lógica para lidar com erros
       console.error("Erro ao registrar o usuário:", error);
-      res.status(500).send("Erro ao registrar o usuário");
+      res
+        .status(500)
+        .json({ status: "error", message: "Erro ao registrar o usuário" });
     }
   }
-
   static async loginUsuario(req, res) {
     const { email, senha } = req.query;
+    console.log(req.query);
 
     try {
       const usuario = await Usuario.findOne({ where: { email, senha } });
       if (usuario) {
         console.log("Login bem-sucedido!");
-        res.status(200).json({ id: usuario.id });
+
+        res.status(200).json({ status: "success", id: usuario.id });
       } else {
-        console.log("Credenciais inválidas!");
-        res.send("Credenciais inválidas!");
+        res
+          .status(404)
+          .json({ status: "error", error: "Usuário não encontrado" }); // Status 404 para não encontrado
       }
     } catch (error) {
       console.error("Erro ao verificar as credenciais:", error);
@@ -60,10 +84,12 @@ class UsuarioController {
       });
       if (usuario) {
         console.log("Usuário encontrado:", usuario);
-        res.json(usuario);
+        res.status(200).json({ status: "success", data: usuario });
       } else {
         console.log("Usuário não encontrado");
-        res.status(404).json({ error: "Usuário não encontrado" });
+        res
+          .status(404)
+          .json({ status: "error", error: "Usuário não encontrado" }); // Status 404 para não encontrado
       }
     } catch (error) {
       console.error("Erro ao buscar o usuário:", error);

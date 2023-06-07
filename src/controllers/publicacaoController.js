@@ -1,12 +1,18 @@
-const Publicacao = require("../models/publicacao");
+const Publicacoes = require("../models/publicacao");
 
 class PublicacaoController {
   static async criarPublicacao(req, res) {
-    const { texto, id_usuario } = req.body;
+    const { params } = req.body;
+    const { texto, id, imageSrc } = params;
+    const imagemBase64 = imageSrc;
+
+    // Converter a imagem base64 para Buffer
+    const imagemBuffer = Buffer.from(imagemBase64, "base64");
     try {
-      const post = await Publicacao.create({
+      const post = await Publicacoes.create({
         texto,
-        id_usuario,
+        id_usuario: id,
+        imagem: imagemBuffer,
       });
       console.log("Publicação criada com sucesso!");
 
@@ -15,15 +21,13 @@ class PublicacaoController {
       console.error("Erro ao inserir a publicação:", error);
       res.status(500).send("Erro ao inserir a publicação");
     }
-
-    res.send("Publicação criada com sucesso!");
   }
 
   static async listarPublicacoesPorUsuario(req, res) {
     const idUsuario = req.params.idUsuario; // Supondo que o ID do usuário seja passado como parâmetro na rota
 
     try {
-      const publicacoes = await Publicacao.findAll({
+      const publicacoes = await Publicacoes.findAll({
         where: {
           id_usuario: idUsuario, // Filtrando as publicações pelo ID do usuário
         },

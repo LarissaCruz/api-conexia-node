@@ -2,8 +2,14 @@ const express = require("express");
 const router = express.Router();
 const UsuarioController = require("../controllers/usuarioController");
 const PublicacaoController = require("../controllers/publicacaoController");
+const multer = require("multer");
+const upload = multer({ dest: "uploads/" });
 
-router.post("/usuarios/registro", UsuarioController.registrarUsuario);
+router.post(
+  "/usuarios/registro",
+  upload.single("imagem"),
+  UsuarioController.registrarUsuario
+);
 router.get("/usuarios/login", UsuarioController.loginUsuario);
 router.get("/usuarios/:id", UsuarioController.getUsuario);
 

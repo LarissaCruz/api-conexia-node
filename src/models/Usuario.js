@@ -33,6 +33,10 @@ Usuario.init(
       type: DataTypes.STRING,
       allowNull: false,
     },
+    imagem: {
+      type: DataTypes.BLOB("long"),
+      allowNull: false,
+    },
   },
   {
     sequelize,
