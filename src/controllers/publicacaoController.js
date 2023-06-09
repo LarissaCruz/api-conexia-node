@@ -23,6 +23,18 @@ class PublicacaoController {
     }
   }
 
+  static async listarPublicacoes(req, res) {
+    try {
+      const publicacoes = await Publicacoes.findAll();
+      
+      res.status(200).json({ data:publicacoes});
+  
+    } catch (error) {
+      console.error("Erro ao listar publicações por usuário:", error);
+      res.status(500).json({ error: "Erro ao listar publicações por usuário" });
+    }
+  }
+
   static async listarPublicacoesPorUsuario(req, res) {
     const idUsuario = req.params.idUsuario; // Supondo que o ID do usuário seja passado como parâmetro na rota
 
