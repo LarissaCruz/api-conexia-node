@@ -3,7 +3,9 @@ const router = express.Router();
 const UsuarioController = require("../controllers/usuarioController");
 const PublicacaoController = require("../controllers/publicacaoController");
 const multer = require("multer");
-const upload = multer({ dest: "uploads/", limits: { fileSize: 200 * 1024 * 1024 }, // Limite de 10MB
+const upload = multer({
+  dest: "uploads/",
+  limits: { fileSize: 200 * 1024 * 1024 }, // Limite de 10MB
 });
 
 router.post(
@@ -13,8 +15,13 @@ router.post(
 );
 router.get("/usuarios/login", UsuarioController.loginUsuario);
 router.get("/usuarios/:id", UsuarioController.getUsuario);
+router.get("/usuarios/sugestion/", UsuarioController.getAllUsuario);
 
 router.post("/publicacoes", PublicacaoController.criarPublicacao);
 router.get("/publicacoes", PublicacaoController.listarPublicacoes);
+router.get(
+  "/publicacoes/:id",
+  PublicacaoController.listarPublicacoesPorUsuario
+);
 
 module.exports = router;

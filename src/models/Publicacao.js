@@ -1,9 +1,11 @@
 const { Model, DataTypes } = require("sequelize");
 const sequelize = require("../database");
 
-class Publicacoes extends Model {}
+const Usuario = require("./usuario"); // Import the Usuario model
 
-Publicacoes.init(
+class Publicacao extends Model {}
+
+Publicacao.init(
   {
     texto: {
       type: DataTypes.STRING,
@@ -14,7 +16,7 @@ Publicacoes.init(
       allowNull: false,
     },
     imagem: {
-      type: DataTypes.BLOB("long"),
+      type: DataTypes.TEXT("long"),
       allowNull: true,
     },
   },
@@ -25,4 +27,9 @@ Publicacoes.init(
   }
 );
 
-module.exports = Publicacoes;
+Publicacao.belongsTo(Usuario, {
+  foreignKey: "id_usuario",
+  targetKey: "id",
+});
+
+module.exports = Publicacao;

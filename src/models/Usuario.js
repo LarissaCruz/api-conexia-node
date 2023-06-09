@@ -34,8 +34,8 @@ Usuario.init(
       allowNull: false,
     },
     imagem: {
-      type: DataTypes.BLOB("long"),
-      allowNull: false,
+      type: DataTypes.TEXT("long"),
+      allowNull: true,
     },
   },
   {

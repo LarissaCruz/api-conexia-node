@@ -1,11 +1,20 @@
-const Usuario = require("../models/Usuario");
+const Usuario = require("../models/usuario");
+const { Op } = require("sequelize");
 
 class UsuarioController {
   static async registrarUsuario(req, res) {
     try {
       // Extrair os dados do corpo da solicitação
-      const { email, senha, confirmSenha, nome, sobrenome, idade, cidade } =
-        req.body;
+      const {
+        email,
+        senha,
+        confirmSenha,
+        nome,
+        sobrenome,
+        idade,
+        cidade,
+        imagem,
+      } = req.body;
 
       const usuarioExistente = await Usuario.findOne({ where: { email } });
       if (usuarioExistente) {
@@ -15,11 +24,6 @@ class UsuarioController {
           message: "O email já está cadastrado.",
         });
       }
-      // Extrair a imagem em base64 do corpo da solicitação
-      const imagemBase64 = req.body.imagem;
-
-      // Converter a imagem base64 para Buffer
-      const imagemBuffer = Buffer.from(imagemBase64, "base64");
 
       // Crie um novo usuário com os dados fornecidos
       const novoUsuario = await Usuario.create({
@@ -30,7 +34,7 @@ class UsuarioController {
         sobrenome,
         idade,
         cidade,
-        imagem: imagemBuffer,
+        imagem: imagem,
       });
 
       // Responda com sucesso
@@ -54,7 +58,9 @@ class UsuarioController {
       if (usuario) {
         console.log("Login bem-sucedido!");
 
-        res.status(200).json({ status: "success", id: usuario.id });
+        res
+          .status(200)
+          .json({ status: "success", id: usuario.id, usuario: usuario });
       } else {
         res
           .status(404)
@@ -63,6 +69,35 @@ class UsuarioController {
     } catch (error) {
       console.error("Erro ao verificar as credenciais:", error);
       res.status(500).send("Erro ao fazer o login");
+    }
+  }
+
+  static async getAllUsuario(req, res) {
+    const { idade, id } = req.query;
+    console.log("tesdte", req.query);
+    try {
+      const usuarios = await Usuario.findAll({
+        attributes: [
+          "id",
+          "nome",
+          "email",
+          "senha",
+          "confirmSenha",
+          "sobrenome",
+          "idade",
+          "cidade",
+        ],
+        where: {
+          idade: { [Op.lte]: idade },
+          id: { [Op.ne]: id },
+        },
+      });
+
+      console.log("Usuários encontrados:", usuarios);
+      res.status(200).json({ status: "success", data: usuarios });
+    } catch (error) {
+      console.error("Erro ao buscar os usuários:", error);
+      res.status(500).json({ error: "Erro ao buscar os usuários" });
     }
   }
 
